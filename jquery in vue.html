@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>jQuery in Vue</title>
+	<link rel="stylesheet" href="./vendor/bootstrap-datepicker/css/bootstrap-datepicker.min.css">
+</head>
+<body>
+
+	<div id="app">
+		<date-picker @update-date="onUpdateDate" :date-format="dateformat" :autoclose="autoclose" v-once></date-picker>
+		<span v-html="date"></span>
+	</div>
+
+
+	<script src="./vendor/jquery.min.js"></script>
+	<script src="./vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+	<script src="./vendor//bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+	<script src="./vendor/vue/vue.min.js"></script>
+
+	<script>
+		Vue.component('date-picker', {
+			template: '<input />',
+			props: {
+				dateFormat: {
+					type: String,
+					default: 'yyyy-mm-dd'
+				},
+				autoclose: {
+					type: Boolean,
+					default: false	
+				}
+			},
+			mounted () {
+				$(this.$el).datepicker({
+					language: 'zh-CN',
+					format: this.dateFormat,
+					autoclose: this.autoclose,
+				});
+				$(this.$el).datepicker()
+				.on("changeDate", (event) => {
+					debugger;
+					this.$emit('update-date', event.date);
+				});
+			},
+			beforeDestroy () {
+				$(this.$el).datepicker('hide').datepicker('destroy');
+			}
+		});
+		let vm = new Vue({
+			el: "#app",
+			data () {
+				return {
+					dateformat: 'yyyy-mm-dd',
+					autoclose: true,
+					date: ''
+				}
+			},
+			methods: {
+				onUpdateDate (val) {
+					const temp = new Date(val);
+					this.date = [temp.getFullYear(), temp.getMonth()+1, temp.getDate()].join('-');
+				}
+			}
+		});
+	</script>
+</body>
+</html>
